@@ -22,11 +22,12 @@ func DeleteExpiredSnapshots(cmd *m.DeleteExpiredSnapshotsCommand) error {
 
 		if setting.SnapShotRemoveExpired {
 			deleteExpiredSql := "DELETE FROM dashboard_snapshot WHERE expires < ?"
-			expiredResponse, err := x.Exec(deleteExpiredSql, time.Now)
+			expiredResponse, err := x.Exec(deleteExpiredSql, time.Now())
 			if err != nil {
 				return err
 			}
 			expiredCount, _ = expiredResponse.RowsAffected()
+			cmd.DeletedRows = expiredCount
 		}
 
 		sqlog.Debug("Deleted old/expired snaphots", "expired", expiredCount)

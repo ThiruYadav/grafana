@@ -83,7 +83,12 @@ func (service *CleanUpService) cleanUpTmpFiles() {
 }
 
 func (service *CleanUpService) deleteExpiredSnapshots() {
-	bus.Dispatch(&m.DeleteExpiredSnapshotsCommand{})
+	cmd := m.DeleteExpiredSnapshotsCommand{}
+	if err := bus.Dispatch(&cmd); err != nil {
+		service.log.Error("Problem deleting expired snapshots", "error", err.Error())
+	} else {
+		service.log.Debug("Deleted expired snapshots", "rows affected", cmd.DeletedRows)
+	}
 }
 
 func (service *CleanUpService) deleteExpiredDashboardVersions() {
